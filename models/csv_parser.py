@@ -260,9 +260,8 @@ class CsvParserInst(ParserInst):
             }
 
             if sub.action == 'skip':
-                sub_field = {}
-
-            if sub.action == 'xmlid':
+                log.debug("Skipping column '%s'", field.value)
+            elif sub.action == 'xmlid':
                 # We copy the original record to our new one
                 self.rec_dict[self.csv_field] = self.rec_dict[sub_xml_id]
 
@@ -280,20 +279,19 @@ class CsvParserInst(ParserInst):
                     'xml_id': sub_xml_id,
                     'rec_id': self.check_xml_id( sub_xml_id, imp_line.model_id.model ),
                 })
+            elif sub.action == 'field':
+                if sub.sub_action == 'findid':
+                    sub_field = self.match_sub( sub )
+                if sub.sub_action == 'find':
+                    sub_field = self.find_sub( sub_field, sub, sub_xml_id )
+                if sub.sub_action == 'create':
+                    sub_field = self.create_sub( sub_field, sub, sub_xml_id, sub_xml_id )
 
-                # Make sure we don't create a record field in the wizard
-                sub_field = {}
-
-            if sub.sub_action == 'findid':
-                sub_field = self.match_sub( sub )
-            if sub.sub_action == 'find':
-                sub_field = self.find_sub( sub_field, sub, sub_xml_id )
-            if sub.sub_action == 'create':
-                sub_field = self.create_sub( sub_field, sub, sub_xml_id, xml_id )
-
-            sub_field = self.hook_post_field(sub, self.csv_field, sub_field)
-            if sub_field:
-                self.rec_dict[sub_xml_id]['field_dict'][sub.id] = sub_field
+                sub_field = self.hook_post_field(sub, self.csv_field, sub_field)
+                if sub_field:
+                    self.rec_dict[sub_xml_id]['field_dict'][sub.id] = sub_field
+            elif sub.action == 'record':
+                raise ValueError("CSV Parser does not allow nested records to be imported")
 
             self.next_column()
 
