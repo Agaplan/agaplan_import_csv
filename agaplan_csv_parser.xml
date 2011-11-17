@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+	<record id="import_csv_parser" model="import.parser">
+		<field name="name">csv</field>
+	</record>
+
+	<record id="import_csv_argument_delimiter" model="import.parser.argument">
+		<field name="parser_id" ref="import_csv_parser"/>
+		<field name="name">csv_delimiter</field>
+		<field name="validation_func">valid = len(value) == 1</field>
+	</record>
+
+	<record id="import_csv_argument_quotechar" model="import.parser.argument">
+		<field name="parser_id" ref="import_csv_parser"/>
+		<field name="name">csv_quotechar</field>
+		<field name="validation_func">valid = True</field>
+	</record>
+
+	<record id="import_csv_argument_skiplines" model="import.parser.argument">
+		<field name="parser_id" ref="import_csv_parser"/>
+		<field name="name">csv_skip</field>
+		<field name="validation_func">valid = int(value)</field>
+	</record>
+
+	<record id="import_csv_argument_dialect" model="import.parser.argument">
+		<field name="parser_id" ref="import_csv_parser"/>
+		<field name="name">csv_dialect</field>
+		<field name="validation_func">valid = value in csv.list_dialects()</field>
+	</record>
+
+	<record id="import_csv_type" model="import.type">
+		<field name="name">CSV</field>
+		<field name="multi_record">True</field>
+		<field name="parser_id" ref="import_csv_parser"/>
+	</record>
+
+	<record id="import_csv_type_arg_separator" model="import.type.argument">
+		<field name="type_id" ref="import_csv_type"/>
+		<field name="argument_id" ref="import_csv_argument_quotechar"/>
+		<field name="value">"</field>
+	</record>
+
+	<record id="import_csv_type_arg_delimiter" model="import.type.argument">
+		<field name="type_id" ref="import_csv_type"/>
+		<field name="argument_id" ref="import_csv_argument_delimiter"/>
+		<field name="value">,</field>
+	</record>
+
+	<record id="import_csv_type_arg_skiplines" model="import.type.argument">
+		<field name="type_id" ref="import_csv_type"/>
+		<field name="argument_id" ref="import_csv_argument_skiplines"/>
+		<field name="value">1</field>
+	</record>
+
+	<record id="import_csve_type" model="import.type">
+		<field name="name">CSV (Excel)</field>
+		<field name="multi_record">True</field>
+		<field name="parser_id" ref="import_csv_parser"/>
+	</record>
+
+	<record id="import_csvexcel_type_arg_dialect" model="import.type.argument">
+		<field name="type_id" ref="import_csve_type"/>
+		<field name="argument_id" ref="import_csv_argument_dialect"/>
+		<field name="value">excel</field>
+	</record>
+
+</data>
+</openerp>

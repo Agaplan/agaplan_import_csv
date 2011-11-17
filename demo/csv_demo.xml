@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+    <record id="demo_csv_profile_searchid" model="import.profile">
+        <field name="name">Contact Import (Search address ID)</field>
+        <field name="type_id" ref="import_csv_type"/>
+    </record>
+
+    <record id="demo_csv_profile_searchid_line_contact" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_searchid"/>
+        <field name="parent_id"/>
+        <field name="sequence">1000</field>
+        <field name="action">record</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+    </record>
+
+    <record id="demo_csv_profile_searchid_line_contact_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_searchid"/>
+        <field name="parent_id" ref="demo_csv_profile_searchid_line_contact"/>
+        <field name="sequence">1010</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_name"/>
+    </record>
+
+    <record id="demo_csv_profile_searchid_line_contact_ref" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_searchid"/>
+        <field name="parent_id" ref="demo_csv_profile_searchid_line_contact"/>
+        <field name="sequence">1020</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_ref"/>
+    </record>
+
+    <record id="demo_csv_profile_searchid_line_contact_address" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_searchid"/>
+        <field name="parent_id" ref="demo_csv_profile_searchid_line_contact"/>
+        <field name="sequence">1030</field>
+        <field name="action">field</field>
+        <field name="sub_action">findid</field>
+        <field name="field_id" ref="base.field_res_partner_address"/>
+    </record>
+
+
+    <record id="demo_csv_profile_sub_search" model="import.profile">
+        <field name="name">Contact Import (Address name search)</field>
+        <field name="type_id" ref="import_csv_type"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_search_line_contact" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_search"/>
+        <field name="parent_id"/>
+        <field name="sequence">1000</field>
+        <field name="action">record</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_search_line_contact_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_search"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_search_line_contact"/>
+        <field name="sequence">1010</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_name"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_search_line_contact_ref" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_search"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_search_line_contact"/>
+        <field name="sequence">1020</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_ref"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_search_line_contact_address" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_search"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_search_line_contact"/>
+        <field name="sequence">1030</field>
+        <field name="action">field</field>
+        <field name="sub_action">find</field>
+        <field name="field_id" ref="base.field_res_partner_address"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_search_line_contact_address_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_search"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_search_line_contact_address"/>
+        <field name="sequence">1040</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_address_name"/>
+    </record>
+
+
+    <record id="demo_csv_profile_sub_create" model="import.profile">
+        <field name="name">Contact Import (Address name create)</field>
+        <field name="type_id" ref="import_csv_type"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id"/>
+        <field name="sequence">1000</field>
+        <field name="action">record</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact"/>
+        <field name="sequence">1010</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_name"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_ref" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact"/>
+        <field name="sequence">1020</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_ref"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_find_category" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact"/>
+        <field name="sequence">1030</field>
+        <field name="action">field</field>
+        <field name="sub_action">find</field>
+        <field name="field_id" ref="base.field_res_partner_category_id"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_find_category_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact_find_category"/>
+        <field name="sequence">1040</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_category_name"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_address" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact"/>
+        <field name="sequence">1050</field>
+        <field name="action">field</field>
+        <field name="sub_action">create</field>
+        <field name="field_id" ref="base.field_res_partner_address"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_address_name" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact_address"/>
+        <field name="sequence">1060</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_address_name"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_address_city" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact_address"/>
+        <field name="sequence">1070</field>
+        <field name="action">field</field>
+        <field name="field_id" ref="base.field_res_partner_address_city"/>
+    </record>
+
+    <record id="demo_csv_profile_sub_create_line_contact_findid_country" model="import.profile.line">
+        <field name="profile_id" ref="demo_csv_profile_sub_create"/>
+        <field name="parent_id" ref="demo_csv_profile_sub_create_line_contact_address"/>
+        <field name="sequence">1080</field>
+        <field name="action">field</field>
+        <field name="sub_action">findid</field>
+        <field name="field_id" ref="base.field_res_partner_address_country_id"/>
+    </record>
+
+</data>
+</openerp>
