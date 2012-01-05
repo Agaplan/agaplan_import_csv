@@ -105,10 +105,16 @@ class CsvParserInst(ParserInst):
             log.debug('Skipped over line : %s', header_line)
             self.line += 1
 
+        line_obj = self.pool.get('import.profile.line')
+        line_ids = line_obj.search(self.cursor, self.uid, [('parent_id','=',False),('action','=','record'),('profile_id','=',imp_profile.id)])
+        prof_iter = iter(line_obj.browse(self.cursor, self.uid, line_ids))
         self.rec_dict = OrderedDict()
         for self.csv_line in self.data:
             # The main loop over each line in the csv
-            imp_rec = imp_profile.line_ids[0]
+            try:
+                imp_rec = prof_iter.next()
+            except StopIteration:
+                log.debug("repeating last profile line")
 
             if imp_rec.action != 'record':
                 raise osv.except_osv( _("Invalid profile"), _("The csv parser expects one record type line to start with") )
