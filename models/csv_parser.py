@@ -133,30 +133,30 @@ class CsvParserInst(ParserInst):
             res.append( (0, 0, frec) )
         return res
 
-    def match_sub(self, imp_line):
+    def match_sub(self, value, imp_line):
         """
             Used for sub_action == 'findid'
-            We presume the self.csv_field is a link to
+            We presume the @param value is a link to
             a related field described in imp_line.
         """
-        match_res = self.check_xml_id( self.csv_field, imp_line.field_id.relation )
+        match_res = self.check_xml_id( value, imp_line.field_id.relation )
         if not match_res:
             # Not an xml id it seems, check if we can find a database id match
             try:
-                log.warn('No result on xml_id %s', self.csv_field)
-                match_res = self.pool.get( imp_line.field_id.relation ).browse(self.cursor, self.uid, int(self.csv_field), context=self.context)
+                log.warn('No result on xml_id %s', value)
+                match_res = self.pool.get( imp_line.field_id.relation ).browse(self.cursor, self.uid, int(value), context=self.context)
                 log.info('Linking to %s', match_res)
                 match_res = match_res.id
             except ValueError:
                 # Means the csv_field was not an integer
-                log.warn('No luck converting %s to an integer', self.csv_field)
+                log.warn('No luck converting %s to an integer', value)
             except KeyError:
                 # Means search had no results
-                log.warn('No luck searching for %d in %s', int(self.csv_field), imp_line.field_id.relation)
+                log.warn('No luck searching for %d in %s', int(value), imp_line.field_id.relation)
         if not match_res:
-            log.error("Could not find %s as xml_id or as database id in %s", self.csv_field, imp_line.field_id.relation)
+            log.error("Could not find %s as xml_id or as database id in %s", value, imp_line.field_id.relation)
             return {}
-            #raise osv.except_osv( _("Invalid File"), _("While importing we could not find %s in table %s to link with") % (self.csv_field, imp_line.field_id.relation) )
+            #raise osv.except_osv( _("Invalid File"), _("While importing we could not find %s in table %s to link with") % (value, imp_line.field_id.relation) )
         return {
             'line_id': imp_line.id,
             'field_id': imp_line.field_id.id,
@@ -260,9 +260,8 @@ class CsvParserInst(ParserInst):
             }
 
             if sub.action == 'skip':
-                sub_field = {}
-
-            if sub.action == 'xmlid':
+                log.debug("Skipping column '%s'", field.value)
+            elif sub.action == 'xmlid':
                 # We copy the original record to our new one
                 self.rec_dict[self.csv_field] = self.rec_dict[sub_xml_id]
 
@@ -280,20 +279,25 @@ class CsvParserInst(ParserInst):
                     'xml_id': sub_xml_id,
                     'rec_id': self.check_xml_id( sub_xml_id, imp_line.model_id.model ),
                 })
+            elif sub.action == 'field':
+                if sub.sub_action == 'findid':
+                    if self.delimiter in self.csv_field:
+                        log.debug("Found a multi-xml field: %s", self.csv_field)
+                    for multi_value in self.csv_field.split(self.delimiter):
+                        sub_field = self.match_sub( multi_value, sub )
+                        sub_field = self.hook_post_field(sub, multi_value, sub_field)
+                        if sub_field:
+                            self.rec_dict[sub_xml_id]['field_dict'][str(sub.id)+multi_value] = sub_field
+                if sub.sub_action == 'find':
+                    sub_field = self.find_sub( sub_field, sub, sub_xml_id )
+                if sub.sub_action == 'create':
+                    sub_field = self.create_sub( sub_field, sub, sub_xml_id, sub_xml_id )
 
-                # Make sure we don't create a record field in the wizard
-                sub_field = {}
-
-            if sub.sub_action == 'findid':
-                sub_field = self.match_sub( sub )
-            if sub.sub_action == 'find':
-                sub_field = self.find_sub( sub_field, sub, sub_xml_id )
-            if sub.sub_action == 'create':
-                sub_field = self.create_sub( sub_field, sub, sub_xml_id, xml_id )
-
-            sub_field = self.hook_post_field(sub, self.csv_field, sub_field)
-            if sub_field:
-                self.rec_dict[sub_xml_id]['field_dict'][sub.id] = sub_field
+                sub_field = self.hook_post_field(sub, self.csv_field, sub_field)
+                if sub_field:
+                    self.rec_dict[sub_xml_id]['field_dict'][sub.id] = sub_field
+            elif sub.action == 'record':
+                raise ValueError("CSV Parser does not allow nested records to be imported")
 
             self.next_column()
 
