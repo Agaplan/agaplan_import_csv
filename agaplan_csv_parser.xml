@@ -9,7 +9,7 @@
 	<record id="import_csv_argument_delimiter" model="import.parser.argument">
 		<field name="parser_id" ref="import_csv_parser"/>
 		<field name="name">csv_delimiter</field>
-		<field name="validation_func">valid = value.isalnum()</field>
+		<field name="validation_func">valid = str(value) and len(value)</field>
 	</record>
 
 	<record id="import_csv_argument_quotechar" model="import.parser.argument">
