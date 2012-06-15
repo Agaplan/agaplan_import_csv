@@ -209,6 +209,9 @@ class CsvParserInst(ParserInst):
         elif imp_line.action == 'skip':
             self.next_column()
             return {}
+        elif imp_line.action == 'newline':
+            #~ self.csv_line = self.data.next()
+            return {}
 
         # Don't forget to link one of the 2 sides via xml_id
         if imp_line.field_id.ttype == 'one2many':
@@ -297,15 +300,26 @@ class CsvParserInst(ParserInst):
                 if sub.sub_action == 'find':
                     sub_field = self.find_sub( sub_field, sub, sub_xml_id )
                 if sub.sub_action == 'create':
-                    sub_field = self.create_sub( sub_field, sub, sub_xml_id, sub_xml_id )
+                    single_run = True
+                    while single_run or sub.repeat:
+                        try:
+                            sub_field = self.create_sub( sub_field, sub, sub_xml_id, sub_xml_id )
+                            single_run = False
+                        except StopIteration:
+                            log.debug("Reached end of file, graceful exit")
+                            break
 
                 sub_field = self.hook_post_field(sub, self.csv_field, sub_field)
                 if sub_field:
                     self.rec_dict[sub_xml_id]['field_dict'][sub.id] = sub_field
             elif sub.action == 'record':
                 raise ValueError("CSV Parser does not allow nested records to be imported")
-
+            elif sub.action == 'newline':
+                log.debug("skipping to next csv line")
+                self.csv_line = self.data.next()
+                self.csv_iter = iter(self.csv_line)
             self.next_column()
+            single_run = False # Turn off the single_run boolean so our first run doesnt repeat unless sub.repeat is True
 
         if imp_line.field_id.ttype == 'one2many':
             return False # No need to create any field in the model cause it was one2many
